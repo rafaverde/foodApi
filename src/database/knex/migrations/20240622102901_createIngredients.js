@@ -1,7 +1,12 @@
 exports.up = (knex) =>
   knex.schema.createTable("ingredients", (table) => {
     table.increments("id").primary()
-    table.integer("plate_id").unsigned().references("id").inTable("plates")
+    table
+      .integer("plate_id")
+      .unsigned()
+      .references("id")
+      .inTable("plates")
+      .onDelete("CASCADE")
     table.text("name")
   })
 
