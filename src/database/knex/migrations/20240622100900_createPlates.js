@@ -6,10 +6,11 @@ exports.up = (knex) =>
     table.text("name")
     table.text("description")
     table
-      .text("category")
+      .integer("category_id")
       .unsigned()
-      .references("name")
+      .references("id")
       .inTable("plates_category")
+    table.text("category_name")
     table.decimal("price", 3, 2).defaultTo(0)
     table.timestamp("created_at").defaultTo(knex.fn.now())
     table.timestamp("updated_at").defaultTo(knex.fn.now())
