@@ -65,13 +65,36 @@ class PlatesController {
     response.json()
   }
 
-  //Listar os pratos da categoria
   async index(request, response) {
-    const { category_id } = request.query
+    const { user_id, plate_name, ingredients } = request.query
 
-    const plates = await knex("plates").where({ category_id }).orderBy("name")
+    let plate
 
-    return response.json(plates)
+    if (ingredients) {
+      const filterIngredients = ingredients
+        .split(",")
+        .map((ingredient) => ingredient.trim())
+
+      plate = await knex("ingredients")
+        .select(
+          "plates.id",
+          "plates.name",
+          "plates.user_id",
+          "plates.category_id",
+          "plates.category_name"
+        )
+        // .where("plates.user_id", user_id)
+        .whereLike("plates.name", `%${plate_name}%`)
+        .whereIn("ingredients.name", filterIngredients)
+        .innerJoin("plates", "plates.id", "ingredients.plate_id")
+    } else {
+      plate = await knex("plates")
+        // .where({ user_id })
+        .orderBy("name")
+        .whereLike("name", `%${plate_name}%`)
+    }
+
+    response.json({ plate })
   }
 }
 
