@@ -23,6 +23,12 @@ class PlatesCategoryController {
 
     response.json()
   }
+
+  async index(request, response) {
+    const categories = await knex("plates_category").orderBy("name")
+
+    response.json(categories)
+  }
 }
 
 module.exports = PlatesCategoryController
