@@ -1,4 +1,5 @@
 const knex = require("../database/knex")
+const AppError = require("../utils/AppError")
 
 class PlatesController {
   async create(request, response) {
@@ -95,6 +96,68 @@ class PlatesController {
     }
 
     response.json({ plate })
+  }
+
+  async update(request, response) {
+    const { name, description, ingredients, price, category } = request.body
+    const { id } = request.params
+
+    const plate = await knex("plates").where({ id }).first()
+
+    if (!plate) {
+      throw new AppError("Prato não encontrado!")
+    }
+
+    //Filter new ingredient and add to database if it do not exists
+    const fetchPlateIngredients = await knex("ingredients")
+      .where({
+        plate_id: id,
+      })
+      .select("name")
+
+    const plateIngredients = fetchPlateIngredients.map(
+      (ingredient) => ingredient.name
+    )
+
+    const newIngredients = ingredients.filter(
+      (ingredient) =>
+        !plateIngredients.some((newIngredient) => ingredient === newIngredient)
+    )
+    console.log(newIngredients)
+
+    const ingredientsInsert = newIngredients.map((name) => {
+      return {
+        plate_id: id,
+        name,
+      }
+    })
+
+    //Filter category an block if it does not exists
+    if (category) {
+      const checkCategoryExists = await knex("plates_category")
+        .where({ name: category })
+        .first()
+
+      if (!checkCategoryExists) {
+        throw new AppError("Essa categoria não existe.")
+      }
+    }
+
+    plate.name = name ?? plate.name
+    plate.description = description ?? plate.description
+    plate.price = price ?? plate.price
+    plate.category_name = category ?? plate.category
+
+    await knex("ingredients").insert(ingredientsInsert)
+
+    await knex("plates").where({ id }).update({
+      name: plate.name,
+      description: plate.description,
+      price: plate.price,
+      category_name: plate.category_name,
+    })
+
+    response.status(200).json()
   }
 }
 
