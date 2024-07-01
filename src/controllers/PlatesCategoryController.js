@@ -4,7 +4,7 @@ const AppError = require("../utils/AppError")
 class PlatesCategoryController {
   async create(request, response) {
     const { category } = request.body
-    const { user_id } = request.params
+    const user_id = request.user.id
 
     const checkCategoryExists = await knex("plates_category")
       .where({

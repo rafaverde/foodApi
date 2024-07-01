@@ -6,7 +6,7 @@ class PlatesController {
     const { image, name, description, ingredients, price, category } =
       request.body
 
-    const { user_id } = request.params
+    const user_id = request.user.id
 
     const checkCategoryExists = await knex("plates_category")
       .where({
@@ -44,7 +44,7 @@ class PlatesController {
 
     await knex("ingredients").insert(ingredientsInsert)
 
-    response.json()
+    return response.json()
   }
 
   async show(request, response) {
@@ -55,7 +55,7 @@ class PlatesController {
       .where({ plate_id: id })
       .orderBy("name")
 
-    response.json({ ...plate, ingredients })
+    return response.json({ ...plate, ingredients })
   }
 
   async delete(request, response) {
@@ -63,11 +63,13 @@ class PlatesController {
 
     await knex("plates").where({ id }).delete()
 
-    response.json()
+    return response.json()
   }
 
   async index(request, response) {
-    const { user_id, plate_name, ingredients } = request.query
+    const { plate_name, ingredients } = request.query
+
+    const user_id = request.user.id
 
     let plate
 
@@ -95,7 +97,7 @@ class PlatesController {
         .whereLike("name", `%${plate_name}%`)
     }
 
-    response.json({ plate })
+    return response.json({ plate })
   }
 
   async update(request, response) {
@@ -123,7 +125,6 @@ class PlatesController {
       (ingredient) =>
         !plateIngredients.some((newIngredient) => ingredient === newIngredient)
     )
-    console.log(newIngredients)
 
     const ingredientsInsert = newIngredients.map((name) => {
       return {
@@ -132,7 +133,7 @@ class PlatesController {
       }
     })
 
-    //Filter category an block if it does not exists
+    //Filter category and block if it does not exists
     if (category) {
       const checkCategoryExists = await knex("plates_category")
         .where({ name: category })
@@ -157,7 +158,7 @@ class PlatesController {
       category_name: plate.category_name,
     })
 
-    response.status(200).json()
+    return response.status(200).json()
   }
 }
 

@@ -9,7 +9,7 @@ class UsersController {
     const checkUserExists = await knex("users").where({ email }).first()
 
     if (checkUserExists) {
-      throw new AppError("Este email já está sendo usado.")
+      throw new AppError("Já existe um usuário com este email!")
     }
 
     const hashedPassword = await hash(password, 8)
@@ -21,9 +21,9 @@ class UsersController {
 
   async update(request, response) {
     const { name, email, password, old_password } = request.body
-    const { id } = request.params
+    const user_id = request.user.id
 
-    const user = await knex("users").where({ id }).first()
+    const user = await knex("users").where({ id: user_id }).first()
 
     if (!user) {
       throw new AppError("Usuário não encontrado!")
@@ -32,7 +32,7 @@ class UsersController {
     if (email) {
       const userWithUpdatedEmail = await knex("users").where({ email }).first()
 
-      if (userWithUpdatedEmail && userWithUpdatedEmail.id !== user.id) {
+      if (userWithUpdatedEmail && userWithUpdatedEmail.id !== user_id) {
         throw new AppError("Este email já está sendo usado.")
       }
     }
@@ -57,7 +57,7 @@ class UsersController {
       user.password = await hash(password, 8)
     }
 
-    await knex("users").where({ id }).update({
+    await knex("users").where({ id: user_id }).update({
       name: user.name,
       email: user.email,
       password: user.password,
