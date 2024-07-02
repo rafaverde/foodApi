@@ -69,7 +69,7 @@ class PlatesController {
   async index(request, response) {
     const { plate_name, ingredients } = request.query
 
-    const user_id = request.user.id
+    // const user_id = request.user.id
 
     let plate
 
@@ -156,6 +156,7 @@ class PlatesController {
       description: plate.description,
       price: plate.price,
       category_name: plate.category_name,
+      updated_at: knex.fn.now(),
     })
 
     return response.status(200).json()

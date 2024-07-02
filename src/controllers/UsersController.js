@@ -20,7 +20,8 @@ class UsersController {
   }
 
   async update(request, response) {
-    const { name, email, password, old_password } = request.body
+    const { name, email, address, password, old_password, favourites } =
+      request.body
     const user_id = request.user.id
 
     const user = await knex("users").where({ id: user_id }).first()
@@ -38,8 +39,9 @@ class UsersController {
     }
 
     user.name = name ?? user.name
-
     user.email = email ?? user.email
+    user.address = address ?? user.address
+    user.favourites = favourites ?? user.favourites
 
     if (password && !old_password) {
       throw new AppError(
@@ -60,7 +62,9 @@ class UsersController {
     await knex("users").where({ id: user_id }).update({
       name: user.name,
       email: user.email,
+      address: user.address,
       password: user.password,
+      favourites: user.favourites,
       updated_at: knex.fn.now(),
     })
 
