@@ -5,7 +5,8 @@ const DiskStorage = require("../providers/DiskStorage")
 class UserAvatarController {
   async update(request, response) {
     const user_id = request.user.id
-    const avatarFileName = request.file.filename
+    const checkIfItsAFile = request.file
+    const avatarFileName = checkIfItsAFile ? request.file.filename : null
 
     const diskStorage = new DiskStorage()
 
@@ -23,8 +24,12 @@ class UserAvatarController {
     }
 
     // Sends filename and kind, that diferences the folder that will be saved
-    const filename = await diskStorage.saveFile(avatarFileName, "avatar")
-    user.avatar = filename
+    if (avatarFileName !== null) {
+      const filename = await diskStorage.saveFile(avatarFileName, "avatar")
+      user.avatar = filename
+    } else {
+      user.avatar = null
+    }
 
     await knex("users").where({ id: user_id }).update(user)
 

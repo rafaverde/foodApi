@@ -8,6 +8,7 @@ exports.up = (knex) =>
       .inTable("users")
       .onDelete("CASCADE")
       .onUpdate("CASCADE")
+    table.text("user_address")
     table.text("order_status").notNullable().defaultTo("Aguardando confirmação")
     table.text("items").notNullable()
     table.text("payment_status").notNullable().defaultTo("Aguardando aprovação")
