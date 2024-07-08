@@ -101,6 +101,7 @@ class PlatesController {
   }
 
   async update(request, response) {
+    const user_id = request.user.id
     const { name, description, ingredients, price, category } = request.body
     const { id } = request.params
 
@@ -151,7 +152,9 @@ class PlatesController {
     plate.price = price ?? plate.price
     plate.category_name = category ?? plate.category
 
-    await knex("ingredients").insert(ingredientsInsert)
+    if (!ingredientsInsert) {
+      await knex("ingredients").insert(ingredientsInsert)
+    }
 
     await knex("plates").where({ id }).update({
       name: plate.name,
