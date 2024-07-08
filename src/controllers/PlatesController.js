@@ -97,7 +97,7 @@ class PlatesController {
         .whereLike("name", `%${plate_name}%`)
     }
 
-    return response.json({ plate })
+    return response.json(plate)
   }
 
   async update(request, response) {
@@ -133,14 +133,16 @@ class PlatesController {
       }
     })
 
-    //Filter category and block if it does not exists
     if (category) {
       const checkCategoryExists = await knex("plates_category")
         .where({ name: category })
         .first()
 
       if (!checkCategoryExists) {
-        throw new AppError("Essa categoria não existe.")
+        await knex("plates_category").insert({
+          user_id,
+          name: category,
+        })
       }
     }
 
