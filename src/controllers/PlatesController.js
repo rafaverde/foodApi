@@ -102,7 +102,14 @@ class PlatesController {
 
   async update(request, response) {
     const user_id = request.user.id
-    const { name, description, ingredients, price, category } = request.body
+    const {
+      name,
+      description,
+      ingredients,
+      deletedIngredients,
+      price,
+      category,
+    } = request.body
     const { id } = request.params
 
     const plate = await knex("plates").where({ id }).first()
@@ -111,7 +118,7 @@ class PlatesController {
       throw new AppError("Prato não encontrado!")
     }
 
-    //Filter new ingredient and add to database if it do not exists
+    //Filter new ingredient and add to database if it does not exists
     const fetchPlateIngredients = await knex("ingredients")
       .where({
         plate_id: id,
@@ -128,6 +135,13 @@ class PlatesController {
     )
 
     const ingredientsInsert = newIngredients.map((name) => {
+      return {
+        plate_id: id,
+        name,
+      }
+    })
+
+    const ingredientesToDelete = deletedIngredients.map((name) => {
       return {
         plate_id: id,
         name,
@@ -152,8 +166,21 @@ class PlatesController {
     plate.price = price ?? plate.price
     plate.category_name = category ?? plate.category
 
-    if (!ingredientsInsert) {
+    if (ingredientsInsert.length > 0) {
       await knex("ingredients").insert(ingredientsInsert)
+    }
+
+    if (ingredientesToDelete.length > 0) {
+      ingredientesToDelete.map((ingredient) => {
+        async function removeFromDataBase() {
+          await knex("ingredients")
+            .where({ plate_id: id })
+            .andWhere("name", ingredient.name)
+            .delete()
+        }
+
+        removeFromDataBase()
+      })
     }
 
     await knex("plates").where({ id }).update({
