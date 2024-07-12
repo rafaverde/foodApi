@@ -1,5 +1,6 @@
 const knex = require("../database/knex")
 const AppError = require("../utils/AppError")
+const DiskStorage = require("../providers/DiskStorage")
 
 class PlatesController {
   async create(request, response) {
@@ -60,6 +61,17 @@ class PlatesController {
 
   async delete(request, response) {
     const { id } = request.params
+    const plate = await knex("plates").where({ id }).first()
+
+    const diskStorage = new DiskStorage()
+
+    if (!plate) {
+      throw new AppError("Prato não encontrado.", 404)
+    }
+
+    if (plate.image) {
+      await diskStorage.deleteFile(plate.image, "plate")
+    }
 
     await knex("plates").where({ id }).delete()
 
