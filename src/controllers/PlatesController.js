@@ -86,9 +86,9 @@ class PlatesController {
     let plate
 
     if (ingredients) {
-      const filterIngredients = ingredients
-        .split(",")
-        .map((ingredient) => ingredient.trim())
+      // const filterIngredients = ingredients
+      //   .split(",")
+      //   .map((ingredient) => ingredient.trim())
 
       plate = await knex("ingredients")
         .select(
@@ -96,12 +96,16 @@ class PlatesController {
           "plates.name",
           "plates.user_id",
           "plates.category_id",
-          "plates.category_name"
+          "plates.category_name",
+          "plates.price",
+          "plates.image",
+          "plates.description"
         )
         // .where("plates.user_id", user_id)
         .whereLike("plates.name", `%${plate_name}%`)
-        .whereIn("ingredients.name", filterIngredients)
+        .orWhereLike("ingredients.name", `%${ingredients}%`)
         .innerJoin("plates", "plates.id", "ingredients.plate_id")
+        .groupBy("plates.id")
     } else {
       plate = await knex("plates")
         // .where({ user_id })
