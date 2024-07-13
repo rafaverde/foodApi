@@ -5,7 +5,13 @@ exports.up = (knex) =>
     table.text("email")
     table.text("address")
     table.text("password")
-    table.text("role")
+    table
+      .enum("role", ["admin", "customer"], {
+        useNative: true,
+        enumName: "roles",
+      })
+      .notNullable()
+      .default("customer")
     table.text("avatar").nullable().defaultTo(null)
     table.text("favourites")
     table.timestamp("created_at").defaultTo(knex.fn.now())
