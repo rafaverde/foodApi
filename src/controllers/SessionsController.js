@@ -37,6 +37,12 @@ class SessionsController {
 
     return response.json({ user })
   }
+
+  async logout(request, response) {
+    response.clearCookie("token")
+
+    response.status(204).json()
+  }
 }
 
 module.exports = SessionsController
