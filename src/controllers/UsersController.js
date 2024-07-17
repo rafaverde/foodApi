@@ -70,6 +70,17 @@ class UsersController {
 
     return response.status(200).json()
   }
+
+  async show(request, response) {
+    //Buscar favoritos apenas
+    const user_id = request.user.id
+
+    const favourites = await knex("users")
+      .where({ id: user_id })
+      .select("favourites")
+
+    return response.json({ favourites })
+  }
 }
 
 module.exports = UsersController
