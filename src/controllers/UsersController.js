@@ -72,7 +72,7 @@ class UsersController {
   }
 
   async show(request, response) {
-    //Buscar favoritos apenas
+    //Show only users favourites
     const user_id = request.user.id
 
     const favourites = await knex("users")
