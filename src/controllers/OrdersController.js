@@ -70,12 +70,19 @@ class OrdersController {
 
   async index(request, response) {
     const user_id = request.user.id
+    const user_role = request.user.role
 
-    const orders = await knex("orders")
-      .where({ user_id })
-      .orderBy("updated_at", "desc")
+    if (user_role === "admin") {
+      const orders = await knex("orders").orderBy("updated_at", "desc")
 
-    response.json({ orders })
+      response.json({ orders })
+    } else {
+      const orders = await knex("orders")
+        .where({ user_id })
+        .orderBy("updated_at", "desc")
+
+      response.json({ orders })
+    }
   }
 }
 
