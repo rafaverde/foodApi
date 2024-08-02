@@ -182,11 +182,11 @@ class PlatesController {
     plate.price = price ?? plate.price
     plate.category_name = category ?? plate.category
 
-    if (ingredientsInsert.length > 0) {
+    if (ingredientsInsert?.length > 0) {
       await knex("ingredients").insert(ingredientsInsert)
     }
 
-    if (ingredientesToDelete.length > 0) {
+    if (ingredientesToDelete?.length > 0) {
       ingredientesToDelete.map((ingredient) => {
         async function removeFromDataBase() {
           await knex("ingredients")
