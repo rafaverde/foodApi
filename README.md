@@ -8,7 +8,7 @@ O FoodExplorer possui dois tipos de usuários, Admin e Customer, com regras defi
 </p>
 
 <p align="center">
-Veja o resultado <a href="https://foodexplorer-rafaverde.netlify.app/" target="_blank">aqui.</a>
+Veja o resultado <a href="https://foodexplorer.vrd.ppg.br" target="_blank">aqui.</a>
 
 <p align="center">
   <a href="#-tecnologias">Tecnologias</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
